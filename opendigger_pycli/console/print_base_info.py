@@ -5,7 +5,7 @@ from rich.table import Table
 
 from opendigger_pycli.dataloaders import filter_dataloader
 from opendigger_pycli.utils import THREAD_POOL
-from opendigger_pycli.utils.gtihub_api import (
+from opendigger_pycli.utils.github_api import (
     RepoInfoType,
     UserInfoType,
     get_repo_info,

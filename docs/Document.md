@@ -1,97 +1,48 @@
 # OpenDigger CLI 文档
-
 - [OpenDigger CLI 文档](#opendigger-cli---)
-    * [🗺️Big Picture](#---big-picture)
-    * [🛴Installation](#--installation)
-        + [基本环境](#----)
-        + [从源码安装](#-----)
-        + [从PyPI安装](#-pypi--)
-    * [🕹️基本用法](#-------)
-        + [开启自动补全](#------)
-        + [获取Github Personal Access Token](#--github-personal-access-token)
-        + [获取OpenAI key](#--openai-key)
-        + [config 命令](#config---)
-        + [repo 命令](#repo---)
-        + [user 命令](#user---)
-        + [query 命令](#query---)
-            - [按类型筛选指标](#-------)
-            - [按时间筛选指标数据](#---------)
-            - [对某一指标进行时间筛选](#-----------)
-            - [正向筛选指标](#------)
-            - [反向筛选指标](#------)
-        + [display 命令](#display---)
-            - [表格格式](#----)
-            - [图表格式](#----)
-            - [json格式](#json--)
-            - [保存输出结果](#------)
-        + [export 命令](#export---)
-            - [数据报告-------------------------------->](#-------------------------------------)
-            - [原始Json数据](#--json--)
-        + [组合使用](#----)
-    * [👀异常处理------------------->](#--------------------------)
-        + [缺失数据自动反馈](#--------)
-        + [仓库不存在](#-----)
-        + [用户不存在](#-----)
-    * [🔌插件开发](#------)
-        + [query的返回数据](#query-----)
-        + [插件示例](#----)
-        + [示例插件使用](#------)
-    * [📄筛选条件表达式详解](#-----------)
-    * [End](#end)
+  * [🗺️Big Picture](#---big-picture)
+  * [⚙️配置](#----)
+    + [1.获取Github Personal Access Token](#1--github-personal-access-token)
+    + [2.获取OpenAI key](#2--openai-key)
+    + [3.config 命令](#3config---)
+  * [🕹️基本用法](#-------)
+    + [1.repo 命令](#1repo---)
+    + [2.user 命令](#2user---)
+    + [3.query 命令](#3query---)
+      - [3.1 按类型筛选指标](#31--------)
+      - [3.2 按时间筛选指标数据 (-f)](#32-------------f-)
+      - [3.3 对某一指标进行时间筛选 (-s)](#33---------------s-)
+      - [3.4 正向筛选指标](#34-------)
+      - [3.5 反向筛选指标 (I)](#35---------i-)
+    + [4. display 命令](#4-display---)
+      - [4.1 表格格式](#41-----)
+      - [4.2 图表格式](#42-----)
+      - [json格式](#json--)
+      - [保存输出结果](#------)
+    + [5.export 命令](#5export---)
+      - [5.1 数据报告](#51-----)
+      - [5.2 原始Json数据](#52---json--)
+    + [6.组合使用](#6----)
+  * [👀异常处理------------------->](#--------------------------)
+    + [1. 缺失数据自动反馈](#1---------)
+    + [2. 仓库不存在](#2------)
+    + [3. 用户不存在](#3------)
+  * [🔌插件开发](#------)
+    + [1. query的返回数据](#1-query-----)
+    + [2. 插件示例](#2-----)
+    + [示例插件使用](#------)
+  * [📄筛选条件表达式详解](#-----------)
+  * [End](#end)
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with
-markdown-toc</a></i></small>
-
+****************************************
 ## 🗺️Big Picture
 
 <a id="big-picture"></a>
 ![Big Picture](./assets/Document-1715175046329.png)
 
-
-***
-
-## 🛴Installation
-
-### 基本环境
-
-Python >= 3.8
-
-### 从源码安装
-
-```bash
-python3 -m pip install flit
-
-git clone https://github.com/CoderChen01/opendigger-pycli.git
-
-flit install
-# 详见：https://github.com/pypa/flit
-```
-
-### 从PyPI安装
-
-```bash
-pip3 install opendigger_pycli
-```
-
-***
-
-## 🕹️基本用法
-
-### 开启自动补全
-
-zsh:
-
-```zsh
-eval "$(_OPENDIGGER_COMPLETE=zsh_source opendigger)"
-```
-
-bash:
-
-```bash
-eval "$(_FOO_BAR_COMPLETE=bash_source opendigger)"
-```
-
-### 获取Github Personal Access Token
+****************************************
+## ⚙️配置
+### 1.获取Github Personal Access Token
 
 Github Personal Access Token用于访问Github API，获取Github API的权限。通过Github API我们可以获取到Github上的仓库和用户的基本信息和自动反馈缺失数据。
 
@@ -100,49 +51,58 @@ Github Personal Access Token用于访问Github API，获取Github API的权限�
 具体步骤：
 
 1. 点击`Fine-grained tokens` > 点击`Generate new token`
-
-   <img src="./assets/Document-1715175560656.png" width="800"/>
+   
+   ![Big Picture](./assets/Document-1715175560656.png)
 
 2. 设置`Token name`和`Token Expiration`
 
    <img src="./assets/Document-1715175607345.png" width="800"/>
 
 3. 选择仓库权限
+
    <img src="./assets/Document-1715175634296.png" width="800"/>
 
 4. 设置issue的读写权限，注意`metadata`权限也必须同时设置只读权限
-   <img src="./assets/Document-1715175671417.png" width="800"/>
+   
+    <img src="./assets/Document-1715175671417.png" width="800"/>
 
-***
-
-### 获取OpenAI key
+### 2.获取OpenAI key
 
 OpenAI key用于访问OpenAI API，获取OpenAI API的权限。通过OpenAI API我们可以对指标数据进行分析和生成洞察报告。
 
 [点击这里](https://beta.openai.com/account/api-keys) 获取。
 
-### config 命令
+### 3.config 命令
 
-config命令用于配置工具所使用到的第三方API密钥和基本的用户信息。目前工具使用到了Github API和OpenAI
-API。两者本别用来查询仓库和用户的基本信息，和用来对指标数据进行分析和生成洞察报告。
+`config`命令用于配置工具所使用到的第三方API密钥和基本的用户信息。
+
+目前工具使用到了Github API和OpenAI API。两者本别用来查询仓库和用户的基本信息，和用来对指标数据进行分析和生成洞察报告。
 
 该命令只有一个参数：
 
 `-s / --set`：用于设置配置项（该参数可以多次使用）
 
-具体使用如下：
-
-```bash
-# Github API Token
-opendigger config --set app_keys.github_pat <your_pat>
-
-# 配置OpenAI API密钥
-opendigger config -s app_keys.openai_key <your_key>
-
-# Config username and email
-opendigger config -s user_info.name <your_name> -s user_info.email <your_email>
-# opendigger config -s user_info.name RainbowJier -s user_info.email 3021809270@qq.com
+**基本语法：**
+```shell
+ opendigger config --set <key>  <token>
 ```
+
+**具体使用如下：**
+
+1. Github API Token
+   ```shell
+   opendigger config --set app_keys.github_pat  <your_pat>
+   ```
+2. 配置OpenAI API密钥
+   ```shell
+   opendigger config -s app_keys.openai_key <your_key>
+   ```
+
+3. Config username and email
+   ```shell
+   opendigger config -s user_info.name <your_name> -s user_info.email <your_email>
+   # opendigger config -s user_info.name RainbowJier -s user_info.email 3021809270@qq.com
+   ```
 
 <details>
 <summary> 演示录屏 </summary>
@@ -151,26 +111,37 @@ opendigger config -s user_info.name <your_name> -s user_info.email <your_email>
 
 </details>
 
-### repo 命令
+*****************************************************************
+## 🕹️基本用法
+
+### 1.repo 命令
 
 repo命令用于查看仓库的指标数据。该命令有一个参数：
 
-`-r / --repo`：用于指定仓库名称。（该参数可以多次使用）
+`-r / --repo`：用于指定仓库名称。（该参数可以多次使用），如果多次指定将会查询多个仓库的指标数据。
 
-如果多次指定将会查询多个仓库的指标数据。
+该命令单独使用时，将会查询仓库的基本信息。基本信息包括
+1. 仓库主页链接
+2. 仓库Owner主页链接
+3. 仓库是否是Fork
+4. 仓库的创建时间与最近更新时间
 
-该命令单独使用时，将会查询仓库的基本信息。基本信息包括仓库主页链接、仓库Owner主页链接、仓库是否是Fork的和仓库的创建时间与最近更新时间。
-**通过这些信息可以帮助用户快速了解仓库的基本情况。**
+通过这些信息可以帮助用户快速了解仓库的基本情况。
 
-具体使用如下：
-
-```bash
-# 查询单个仓库的基本信息
-opendigger repo -r X-lab2017/open-digger
-
-# 查询多个仓库的基本信息
-opendigger repo -r X-lab2017/open-digger -r microsoft/vscode
+**基本语法：**
+```shell
+opendigger repo -r <repository_name>
 ```
+
+**具体使用如下：**
+1. 查询单个仓库的基本信息
+   ```shell
+   opendigger repo -r X-lab2017/open-digger
+   ```
+2. 查询多个仓库的基本信息
+   ```shell
+   opendigger repo -r X-lab2017/open-digger -r microsoft/vscode
+   ```
 
 <details>
 <summary> 结果截图 </summary>
@@ -179,26 +150,37 @@ opendigger repo -r X-lab2017/open-digger -r microsoft/vscode
 
 </details>
 
-### user 命令
+### 2.user 命令
 
 user命令用于查看用户的指标数据。该命令有一个参数：
 
-`-u / --username`：用于指定用户名。（该参数可以多次使用）
+`-u / --username`：用于指定用户名。（该参数可以多次使用），如果多次指定将会查询多个用户的指标数据。
 
-如果多次指定将会查询多个用户的指标数据。
+该命令单独使用时，将会查询用户的基本信息。基本信息包括
+1. 用户名
+2. 用户昵称
+3. 用户邮箱
+4. 用户主页链接
+5. 用户创建时间
+6. 用户最近更新时间。
 
-该命令单独使用时，将会查询用户的基本信息。基本信息包括用户名、用户昵称、用户邮箱、用户主页链接、用户创建时间和用户最近更新时间。
-**通过这些信息可以帮助用户快速了解用户的基本情况。**
+通过这些信息可以帮助用户快速了解用户的基本情况。
 
-具体使用如下：
-
-```bash
-# 查询单个用户的基本信息
-opendigger user -u RainbowJier
-
-# 查询多个用户的基本信息
-opendigger user -u RainbowJier -u X-lab2017
+**基本语法：**
+```shell
+opendigger user -u <username>
 ```
+
+**具体使用如下：**
+1. 查询单个用户的基本信息
+   ```shell
+   opendigger user -u RainbowJier
+   ```
+2.  查询多个用户的基本信息
+   ```shell
+   opendigger user -u RainbowJier -u X-lab2017
+```
+
 
 <details>
 <summary> 结果截图 </summary>
@@ -207,7 +189,7 @@ opendigger user -u RainbowJier -u X-lab2017
 
 </details>
 
-### query 命令
+### 3.query 命令
 
 query命令是`repo`和`user`的子命令(⚠️query命令只能够在`repo`和`user`命令之后使用。)，用于对仓库或用户的指标数据进行筛选。
 
@@ -249,87 +231,92 @@ query 命令有两个子命令：
 > 或`export`子命令，那么query命令将不会对数据进行任何处理，而是只输出筛选指标的基本信息。
 > 用户也可以通过我们提供的接口获取query命令下载并筛选后的数据，开发自定义的命令。具体见[🔌插件开发](#插件开发)。
 
-#### 按类型筛选指标
+#### 3.1 按类型筛选指标
 
 query命令在**不带任何参数**的情况下，可以输出当前支持的**所有指标**的基本信息。基本信息包括指标名称、指标类型、指标引入者和指标数据示例链接。
 
-具体演示如下：
 
-```bash
-# 查看仓库指标的基本信息
-opendigger repo -r X-lab2017/open-digger query
-```
+**具体演示如下：**
+1. 查看仓库指标的基本信息
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query
+   ```
+   ![](./assets/Document-1715176785985.png)
 
-<details>
-<summary> 演示录屏 </summary>
+**如果我们需要查看某一类型的指标的基本信息，可以使用`-i`、`-m`和`-n`参数。**
+1. 查看指标类型为index的指标的基本信息
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -i
+   # 或者
+   opendigger repo -r X-lab2017/open-digger query --index
+   ```
+2. 查看指标类型为metric的指标的基本信息
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -m
+   ```
+3. 查看指标类型为network的指标的基本信息
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -n
+   ```
+   
+**如果我们需要查看某一引入者的指标的基本信息，可以使用`-x`和`-c`参数。**
+1. 查看指标引入者为X-lab的指标的基本信息
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -x
+   ```
+2. 查看指标引入者为CHAOSS的指标的基本信息 
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -c
+   ```
 
-![](./assets/Document-1715176785985.png)
+**同时这些指标可以组合使用，例如：**
+1. 查看指标类型为metric且引入者为X-lab的指标的基本信息
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -m -x
+   # 或者
+   opendigger repo -r X-lab2017/open-digger query -m --x-lab
+   # 或者
+   opendigger repo -r X-lab2017/open-digger query -xm
+   # 或者
+   opendigger repo -r X-lab2017/open-digger query --metric --x-lab
+   ```
+2. 查看指标类型为metric且引入者为CHAOSS的指标的基本信息
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -m -c
+   ```
 
-</details>
+如上所示，我们可以通过组合使用`-i`、`-m`、`-n`、`-x`和`-c`参数来查看我们想要的指标的基本信息。 这些参数都不接受值，只需要指定即可。
 
-如果我们需要查看某一类型的指标的基本信息，可以使用`-i`、`-m`和`-n`参数。
 
-如果我们需要查看某一引入者的指标的基本信息，可以使用`-x`和`-c`参数。
 
-同时这些指标可以组合使用，例如：
+#### 3.2 按时间筛选指标数据 (-f)
 
-```bash
-# 查看指标类型为index的指标的基本信息
-opendigger repo -r X-lab2017/open-digger query -i
-# 或者
-opendigger repo -r X-lab2017/open-digger query --index
-
-# 查看指标类型为metric的指标的基本信息
-opendigger repo -r X-lab2017/open-digger query -m
-
-# 查看指标类型为network的指标的基本信息
-opendigger repo -r X-lab2017/open-digger query -n
-
-# 查看指标引入者为X-lab的指标的基本信息
-opendigger repo -r X-lab2017/open-digger query -x
-
-# 查看指标引入者为CHAOSS的指标的基本信息 
-opendigger repo -r X-lab2017/open-digger query -c
-
-# 查看指标类型为metric且引入者为X-lab的指标的基本信息
-opendigger repo -r X-lab2017/open-digger query -m -x
-# 或者
-opendigger repo -r X-lab2017/open-digger query -m --x-lab
-# 或者
-opendigger repo -r X-lab2017/open-digger query -xm
-# 或者
-opendigger repo -r X-lab2017/open-digger query --metric --x-lab
-
-# 查看指标类型为metric且引入者为CHAOSS的指标的基本信息
-opendigger repo -r X-lab2017/open-digger query -m -c
-```
-
-如上所示，我们可以通过组合使用`-i`、`-m`、`-n`、`-x`和`-c`参数来查看我们想要的指标的基本信息。这些参数都不接受值，只需要指定即可。
-
-#### 按时间筛选指标数据
-
-通过上述参数我们可以筛选出我们关注的指标类型，然后我们可以通过`-f`参数对筛选出的指标类型的数据进行时间上的筛选。
+通过上述参数我们可以筛选出我们关注的指标类型，然后我们可以通过`-f`参数对筛选出的指标类型的数据进行 **时间** 上的筛选。
 
 `-f`参数接受一个指标筛选条件表达式，详细筛选条件表达式见下方：[📄筛选条件表达式详解](#筛选条件表达式详解)。
 
-下面是一些例子（这里为了便于演示将使用`display`子命令将筛选出来的数据在终端以表格形式输出）：
+**下面是一些例子（这里为了便于演示将使用`display`子命令将筛选出来的数据在终端以表格形式输出）：**
 
-```bash
-# 查看仓库X-lab2017/open-digger在2023年的index类型的指标数据，并以表格形式在终端打印
-opendigger repo -r X-lab2017/open-digger query -i -f 2023 display -f table
-
-# 查看仓库X-lab2017/open-digger在2021~2023年的index类型的指标数据，并以表格形式在终端打印
-opendigger repo -r X-lab2017/open-digger query -i -f 2021~2023 display -f table
-
-# 查看仓库X-lab2017/open-digger在2021年3月~2023年3月的index类型的指标数据，并以表格形式在终端打印
-opendigger repo -r X-lab2017/open-digger query -i -f 2021-03~2023-03 display -f table
-
-# 查看仓库X-lab2017/open-digger过去年份3月到8月的index类型的指标数据，并以表格形式在终端打印
-opendigger repo -r X-lab2017/open-digger query -i -f 3~8 display -f table
-
-# 查看仓库X-lab2017/open-digger过去年份3月的index类型的指标数据，并以表格形式在终端打印
-opendigger repo -r X-lab2017/open-digger query -i -f 3 display -f table
-```
+1. 查看仓库X-lab2017/open-digger在2023年的index类型的指标数据，并以表格形式在终端打印
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -i -f 2023 display -f table
+   ```
+2. 查看仓库X-lab2017/open-digger在2021~2023年的index类型的指标数据，并以表格形式在终端打印
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -i -f 2021~2023 display -f table
+   ```
+3. 查看仓库X-lab2017/open-digger在2021年3月~2023年3月的index类型的指标数据，并以表格形式在终端打印
+   ```angular2html
+   opendigger repo -r X-lab2017/open-digger query -i -f 2021-03~2023-03 display -f table
+   ```
+4. 查看仓库X-lab2017/open-digger过去年份3月到8月的index类型的指标数据，并以表格形式在终端打印
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -i -f 3~8 display -f table
+   ```
+5. 查看仓库X-lab2017/open-digger过去年份3月的index类型的指标数据，并以表格形式在终端打印
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -i -f 3 display -f table
+   ```
 
 <details>
 <summary> 演示录屏 </summary>
@@ -341,31 +328,34 @@ opendigger repo -r X-lab2017/open-digger query -i -f 3 display -f table
 
 </details>
 
-#### 对某一指标进行时间筛选
+#### 3.3 对某一指标进行时间筛选 (-s)
 
 基于`-f`参数我们可以对筛选出的指标进行时间上的过滤，但是如果我们需要针对某一个指标进行筛选该怎么办呢？我们可以通过`-s`
 参数来对某一个指标指定筛选条件。
 
 `-s`参数接受一个指标查询表达式，该表达式由 **指标名称** 和 **筛选条件** 表达式组成。指标名称和筛选条件表达式之间用`:`分隔。
 
-下面是一些例子（这里为了便于演示将使用`display`子命令将筛选出来的数据在终端以表格形式输出）：
-
-```bash
-# 查看仓库X-lab2017/open-digger的index类型的指标数据，并对openrank指标进行筛选，只查看2023年的数据，并以表格形式在终端打印
-opendigger repo -r X-lab2017/open-digger query -i -s openrank:2023 display -f table
-
-# 查看仓库X-lab2017/open-digger的index类型的指标数据，并对openrank指标进行筛选，只查看2021~2022年的数据，并以表格形式在终端打印
-opendigger repo -r X-lab2017/open-digger query -i -s openrank:2021~2022 display -f table
-
-# 查看仓库X-lab2017/open-digger的index类型的指标数据，并对openrank指标进行筛选，只查看2021年3月~2022年3月的数据，并以表格形式在终端打印
-opendigger repo -r X-lab2017/open-digger query -i -s openrank:2021-03~2022-03 display -f table
-
-# 查看仓库X-lab2017/open-digger的index类型的指标数据，并对openrank指标进行筛选，只查看过去年份3月到8月的数据，并以表格形式在终端打印
-opendigger repo -r X-lab2017/open-digger query -i -s openrank:3~8 display -f table
-
-# 查看仓库X-lab2017/open-digger的index类型的指标数据，并对openrank指标进行筛选，只查看过去年份8月的数据，并以表格形式在终端打印
-opendigger repo -r X-lab2017/open-digger query -i -s openrank:8 display -f table
-```
+**下面是一些例子（这里为了便于演示将使用`display`子命令将筛选出来的数据在终端以表格形式输出）：**
+1. 查看仓库X-lab2017/open-digger的index类型的指标数据，并对openrank指标进行筛选，只查看2023年的数据，并以表格形式在终端打印
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -i -s openrank:2023 display -f table
+   ```
+2. 查看仓库X-lab2017/open-digger的index类型的指标数据，并对openrank指标进行筛选，只查看2021~2022年的数据，并以表格形式在终端打印
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -i -s openrank:2021~2022 display -f table
+   ```
+3. 查看仓库X-lab2017/open-digger的index类型的指标数据，并对openrank指标进行筛选，只查看2021年3月~2022年3月的数据，并以表格形式在终端打印
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -i -s openrank:2021-03~2022-03 display -f table
+   ```
+4. 查看仓库X-lab2017/open-digger的index类型的指标数据，并对openrank指标进行筛选，只查看过去年份3月到8月的数据，并以表格形式在终端打印
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -i -s openrank:3~8 display -f table
+   ```
+5. 查看仓库X-lab2017/open-digger的index类型的指标数据，并对openrank指标进行筛选，只查看过去年份8月的数据，并以表格形式在终端打印
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -i -s openrank:8 display -f table
+   ```
 
 <details>
 <summary> 演示结果 </summary>
@@ -383,7 +373,7 @@ opendigger repo -r X-lab2017/open-digger query -i -s openrank:8 display -f table
 
 </details>
 
-#### 正向筛选指标
+#### 3.4 正向筛选指标
 
 我们已经可以对指标通过 **类型**、**时间**
 进行筛选并将其在终端以表格形式输出了，并且我们还能针对某一个指标进行时间上的筛选。、
@@ -394,22 +384,15 @@ opendigger repo -r X-lab2017/open-digger query -i -s openrank:8 display -f table
 我们可以通过`-o / --only-select`参数与`-s`参数配合使用，只查询我们关心的指标数据。
 
 比如我们只查询仓库`X-lab2017/open-digger`的`index`类型的指标数据，并且只查询`openrank`指标的数据，我们可以这样做：
-
-```bash
-# 只查看过往年份3~8月的openrank指标数据
-opendigger repo -r X-lab2017/open-digger query -i -s openrank:3~8 -o display -f table
-# 或者
-opendigger repo -r X-lab2017/open-digger query -i -s openrank:3~8 --only-select display -f table
-# 或者
-opendigger repo -r X-lab2017/open-digger query -i -os openrank:3~8 display -f table
-```
-
-<details>
-<summary> 演示截图 </summary>
-
-![](./assets/Document-1715177654341.png)
-
-</details>
+1. 只查看过往年份3~8月的openrank指标数据
+   ```shell
+   opendigger repo -r X-lab2017/open-digger query -i -s openrank:3~8 -o display -f table
+   # 或者
+   opendigger repo -r X-lab2017/open-digger query -i -s openrank:3~8 --only-select display -f table
+   # 或者
+   opendigger repo -r X-lab2017/open-digger query -i -os openrank:3~8 display -f table
+   ```
+   ![](./assets/Document-1715177654341.png)
 
 我们还可以查询多个指标的数据，比如我们还想查看`openrank`和`issue_age`指标的数据，我们可以这样做：
 
@@ -418,7 +401,7 @@ opendigger repo -r X-lab2017/open-digger query -i -os openrank:3~8 display -f ta
 opendigger repo -r X-lab2017/open-digger query -s openrank:3~8 -s issue_age:5~8 -o display -f table
 ```
 
-#### 反向筛选指标
+#### 3.5 反向筛选指标 (I)
 
 我们还可以通过`-I / --ignore`参数来反向筛选指标，即我们可以通过`-I / --ignore`参数来忽略某些指标。
 
@@ -428,7 +411,8 @@ opendigger repo -r X-lab2017/open-digger query -s openrank:3~8 -s issue_age:5~8 
 opendigger repo -r X-lab2017/open-digger query -i -I openrank display -f table
 ```
 
-### display 命令
+
+### 4. display 命令
 
 `display`命令是`query`命令的子命令，用于将筛选出来的数据以 **表格** 、 **图表** 或 **json**格式在终端输出。
 该命令在上文演示中已经使用过，不过该命令还支持除了table格式的其他格式。具体支持参数如下：
@@ -449,11 +433,11 @@ opendigger repo -r X-lab2017/open-digger query -i -I openrank display -f table
 可以通过`-f`参数指定输出格式，并且通过`-s / --save`参数可以将终端输出的内容保存到文件(一个简易版的数据报告)
 中，通过`-p / --paging`参数可以将终端输出的内容分页显示，通过`-c / --pager-color`参数可以在分页显示时启用颜色。
 
-#### 表格格式
+#### 4.1 表格格式
 
 表格格式在上文中已经提及，这里不再赘述。
 
-#### 图表格式
+#### 4.2 图表格式
 
 图表格式可以将筛选出来的数据以图表的形式在终端输出。目前支持的图表类型有：
 
@@ -519,7 +503,7 @@ opendigger repo -r X-lab2017/open-digger query -i -I openrank display -f table
     opendigger repo -r X-lab2017/open-digger query display -f graph -s .
     ```
 
-### export 命令
+### 5.export 命令
 
 `export`命令是`query`命令的子命令，用于将筛选出来的数据经过GPT分析后导出数据报告或直接导出原始json数据。具体支持参数如下：
 
@@ -532,40 +516,37 @@ opendigger repo -r X-lab2017/open-digger query -i -I openrank display -f table
 可以通过`-f`参数指定输出格式，并且通过`-s / --save-dir`参数可以将数据保存到指定目录中，通过`--split / --no-split`
 参数可以将数据分别保存到不同的文件中(只对json格式有用)。
 
-#### 数据报告-------------------------------->
+#### 5.1 数据报告
 
 数据报告是我们对筛选出来的数据进行GPT分析后生成的，该报告包含了筛选出来的数据的分析结果和数据的可视化结果。
 
-具体使用如下：
+**具体使用如下：**
 
-1. **查看仓库X-lab2017/open-digger的所有指标数据（除project_openrank_detail指标），并导出数据报告：**
+1. 查看仓库X-lab2017/open-digger的所有指标数据（除project_openrank_detail指标），并导出数据报告：
 
     ```bash
     opendigger repo -r X-lab2017/open-digger query export -f report -s .
     ```
 
-   [演示录屏](./docs/assets/demos/repo-query-export-report.mp4)
-
-2. **查看仓库X-lab2017/open-digger的所有指标数据(其中查看2023年8月的project_openrank_detail指标，并导出数据报告：**
+2. 查看仓库X-lab2017/open-digger的所有指标数据(其中查看2023年8月的project_openrank_detail指标，并导出数据报告：
 
     ```bash
     open-digger repo -r X-lab2017/open-digger query -s project_openrank_detail:2023-08 export -f report -s .
     ```
 
-#### 原始Json数据
+#### 5.2 原始Json数据
 
 我们可以将筛选出来的数据导出为原始的json数据，这样用户可以自行处理数据。
 
-具体使用如下：
+**具体使用如下：**
+1. 查看仓库X-lab2017/open-digger的所有指标数据(其中查看2023年8月的project_openrank_detail的指标)，并导出原始json数据
+   ```shell
+   open-digger repo -r X-lab2017/open-digger query -s project_openrank_detail:2023-08 export -f json -s .
+   ```
 
-```bash
-# 查看仓库X-lab2017/open-digger的所有指标数据(其中查看2023年8月的project_openrank_detail的指标)，并导出原始json数据
-open-digger repo -r X-lab2017/open-digger query -s project_openrank_detail:2023-08 export -f json -s .
-```
+### 6.组合使用
 
-### 组合使用
-
-query的所有子命令都可以组合使用.
+`query`的所有子命令都可以组合使用.
 
 1. 比如我们可以先使用`query`命令筛选出我们关心的指标数据，
 2. 然后使用`display`命令将筛选出来的数据以表格、图表或json格式在终端输出，
@@ -598,19 +579,19 @@ opendigger repo -r X-lab2017/open-digger query -i -os openrank:2023 display -f t
 
 ## 👀异常处理------------------->
 
-### 缺失数据自动反馈
+### 1. 缺失数据自动反馈
 
 open-digger官方仓库对于一些仓库的指标数据是缺失的。用户查询某个仓库的指标数据时，如果该仓库的指标数据缺失，我们会给出相应的提示，并且会使用用户配置的`github personal access token`
 调用Github API在`opendigger-pycli`的github上自动提交一个数据缺失的issue。
 
 issue信息如图所示：
 
-![issue](./assets/result_screenshots/issue.png)
+![issue](./assets/issue.png)
 
 如果多个用户重复查询同一个仓库的指标数据，我们不会冗余的提交，而是在原有的issue上添加一个"👀"
 符号。这样open-digger开发者可以通过定期查看issue来了解用户关注哪些仓库/用户的哪些指标数据。如果关注人数较多，可以决策是否添加该仓库/用户的指标数据。
 
-### 仓库不存在
+### 2. 仓库不存在
 
 如果用户输入的仓库/用户不存在，我们会给出相应的提示。
 
@@ -622,14 +603,14 @@ opendigger repo -r X-lab2017/open-digger-404
 
 ![](./assets/Document-1715179208160.png)
 
-### 用户不存在
+### 3. 用户不存在
 
 如果用户输入的仓库/用户不存在，我们会给出相应的提示。
 
-比如我们输入了一个不存在的用户`CoderChen01-404`，我们会给出相应的提示：
+比如我们输入了一个不存在的用户`RainbowJier-404`，我们会给出相应的提示：
 
 ```bash
-opendigger user -u CoderChen01-404
+opendigger user -u RainbowJier-404
 ```
 
 ![](./assets/Document-1715179233337.png)
@@ -645,7 +626,7 @@ opendigger user -u CoderChen01-404
 库提供的[Mult Command Pipelines](https://click.palletsprojects.com/en/8.1.x/commands/#multi-command-pipelines)
 特性，可以将筛选出来的数据传递给它的子命令，子命令可以是`display`命令，也可以是用户自定义的命令。
 
-### query的返回数据
+### 1. query的返回数据
 
 ```python
 @dataclass
@@ -705,7 +686,7 @@ class UserQueryResult(BaseQueryResult):
 - `queried_data`：`query`命令筛选后的数据。
 - `failed_query`：`query`命令筛选失败的指标查询表达式。
 
-### 插件示例
+### 2. 插件示例
 
 该示例插件的功能是将筛选出来的数据基本信息打印到终端。
 
@@ -775,7 +756,7 @@ python3 setup.py install
 opendigger repo -r X-lab2017/open-digger  query  --help
 ```
 
-![plugin_example](./assets/result_screenshots/plugin.png)
+![plugin_example](./assets/plugin.png)
 
 会发现`query`命令的`--help`中多了一个`print-result`子命令。
 
@@ -787,7 +768,7 @@ opendigger repo -r X-lab2017/open-digger  query -ios openrank:2023 print-result
 
 结果如下：
 
-![plugin_example](./assets/result_screenshots/plugin-result.png)
+![plugin_example](./assets/plugin-result.png)
 
 
 ***********************************************************************************
@@ -803,45 +784,41 @@ opendigger repo -r X-lab2017/open-digger  query -ios openrank:2023 print-result
 - 年份范围查询
 - 年份月份范围查询
 
-我们使用~来表示范围，使用-来表示年月。
+我们使用`~`来表示范围，使用`-`来表示年月。
 
 通过如下几个示例来说明：
+1. 查询2023年的数据：
+    
+    ```shell
+    opendigger repo -r X-lab2017/open-digger query -ios openrank -f 2023 display -f table
+    ```
+2. 查询2021年到2023年的数据：
+    ```shell
+    opendigger repo -r X-lab2017/open-digger query -ios openrank -f 2021~2023 display -f table
+    ```
 
-查询2023年的数据：
+3. 查询过往年份3月的数据：
+    ```shell
+    opendigger repo -r X-lab2017/open-digger query -ios openrank -f 3 display -f table
+    ```
 
-```bash
-opendigger repo -r X-lab2017/open-digger query -ios openrank -f 2023 display -f table
-```
+4. 查询过往年份3月到8月的数据：
 
-查询2021年到2023年的数据：
+    ```shell
+    opendigger repo -r X-lab2017/open-digger query -ios openrank -f 3~8 display -f table
+    ```
 
-```bash
-opendigger repo -r X-lab2017/open-digger query -ios openrank -f 2021~2023 display -f table
-```
+5. 查询2023年3月的数据：
 
-查询过往年份3月的数据：
+    ```shell
+    opendigger repo -r X-lab2017/open-digger query -ios openrank -f 2023-03 display -f table
+    ```
 
-```bash
-opendigger repo -r X-lab2017/open-digger query -ios openrank -f 3 display -f table
-```
+6. 查询2022年3月到2023年3月的数据：
 
-查询过往年份3月到8月的数据：
-
-```bash
-opendigger repo -r X-lab2017/open-digger query -ios openrank -f 3~8 display -f table
-```
-
-查询2023年3月的数据：
-
-```bash
-opendigger repo -r X-lab2017/open-digger query -ios openrank -f 2023-03 display -f table
-```
-
-查询2022年3月到2023年3月的数据：
-
-```bash
-opendigger repo -r X-lab2017/open-digger query -ios openrank -f 2022-03~2023-03 display -f table
-```
+    ```shell
+    opendigger repo -r X-lab2017/open-digger query -ios openrank -f 2022-03~2023-03 display -f table
+    ```
 
 ## End
 

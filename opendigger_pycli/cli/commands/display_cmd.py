@@ -15,7 +15,9 @@ if t.TYPE_CHECKING:
 
     from ..base import Environment
 
-
+"""
+display支持的相关指令
+"""
 @click.command("display", help="Display indicators in terminal")
 @click.option(
     "--format",
@@ -25,6 +27,7 @@ if t.TYPE_CHECKING:
     help="Display format",
     required=True,
 )
+
 @click.option(
     "--save",
     "-s",
@@ -32,6 +35,7 @@ if t.TYPE_CHECKING:
     type=click.Path(resolve_path=True, path_type=Path, file_okay=False),
     help="Save output to file, you can use this option get a simple report",
 )
+
 @click.option(
     "--paging/--no-paging",
     "-p/ ",
@@ -40,6 +44,7 @@ if t.TYPE_CHECKING:
     help="Page output like more/less command, "
     "you CANNOT use this option and save to file at the same time",
 )
+
 @click.option(
     "--pager-color/--no-pager-color",
     "-c/ ",
@@ -47,6 +52,7 @@ if t.TYPE_CHECKING:
     default=True,
     help="Enable color in pager, Only works when paging is enabled",
 )
+
 @processor
 @pass_environment
 def display(

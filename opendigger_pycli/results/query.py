@@ -14,7 +14,7 @@ from opendigger_pycli.datatypes import (
     IndicatorQuery,
 )
 from opendigger_pycli.console import CONSOLE
-from opendigger_pycli.utils.gtihub_api import (
+from opendigger_pycli.utils.github_api import (
     create_issue,
     search_issue_title,
     create_issue_comment,
@@ -34,7 +34,7 @@ if t.TYPE_CHECKING:
         TrivialIndicatorData,
         TrivialNetworkIndicatorData,
     )
-    from opendigger_pycli.utils.gtihub_api import IssueCommentInfoType, IssueInfoType
+    from opendigger_pycli.utils.github_api import IssueCommentInfoType, IssueInfoType
 
 
 @t.overload
@@ -210,36 +210,75 @@ def query_trivial_network_indicator(
 
 
 class NodataIssueCreator:
+    """
+    用于创建关于NoData问题的GitHub问题的类。
+
+    属性:
+    title (str): 问题的标题。
+    nodata_indicator_names (List[str]): 表示NoData的指标名称列表。
+    _github_pat (str): GitHub的个人访问令牌，用于API访问。
+
+    方法:
+    __init__: 类的构造函数，初始化问题标题、NoData指标名称，并设置GitHub个人访问令牌。
+    """
+
     _github_pat: str
 
     def __init__(self, title: str, nodata_indicator_names: t.List[str]) -> None:
+        """
+        初始化NodataIssueCreator实例。
+
+        参数:
+        title (str): 将要创建的GitHub问题的标题。
+        nodata_indicator_names (List[str]): 与问题相关的NoData指标名称列表。
+        """
         self.title = title
         self.nodata_indicator_names = nodata_indicator_names
 
+        # 获取GitHub个人访问令牌
         self._github_pat = get_github_pat()
 
+        # 搜索已存在的GitHub问题
         self.has_issue, self.issue_infos = search_issue_title(
-            "CoderChen01",
+            "RainbowJier",
             "opendigger-pycli",
             self.title,
             ["nodata", "bot"],
             self._github_pat,
         )
 
+        # 初始化存储已存在问题信息的字典
         self.existed_issue_map: t.Dict[int, IssueInfoType] = {}
         self.existed_nodata_infos: t.Dict[int, t.List[IssueCommentInfoType]] = {}
 
+        # 如果已存在相同标题的问题，则填充已存在问题的映射
         if self._has_existed_issue:
-            for issue_info in self.issue_infos:  # type: ignore
+            for issue_info in self.issue_infos:
                 self.existed_issue_map[issue_info["issue_number"]] = issue_info
+
 
     @property
     def _has_existed_issue(self) -> bool:
+        """
+        检查实例是否已有问题
+        该属性检查实例是否有问题以及是否有具体的问题信息。
+        它不接受任何参数，并返回一个布尔值，指示实例是否已经存在问题。
+        @return bool 返回True如果实例已有问题且有关该问题的具体信息存在，否则返回False。
+        """
+        # 检查是否有问题以及是否有具体的问题信息
         return bool(self.has_issue and self.issue_infos)
 
     def _create_nodata_issue(self) -> bool:
+        """
+        创建一个关于缺失数据的问题（issue）。
+        如果已存在相关问题，则尝试获取每个问题的评论信息，并更新存在缺失数据信息的记录。
+        如果问题不存在，则尝试创建一个新的问题，并记录创建成功的问题信息。
+        返回值:
+            bool: 如果成功创建问题或获取已存在问题的信息，则返回True；否则返回False。
+        """
         if self._has_existed_issue:
-            for issue_info in self.issue_infos:  # type: ignore
+            # 遍历所有问题信息，尝试获取并更新已存在缺失数据问题的评论信息
+            for issue_info in self.issue_infos:
                 (
                     _,
                     self.existed_nodata_infos[issue_info["issue_number"]],
@@ -249,53 +288,73 @@ class NodataIssueCreator:
                 )
             return True
 
+        # 尝试创建一个新的缺失数据问题
         is_success, issue_info = create_issue(
-            "CoderChen01",
+            "RainbowJier",
             "opendigger-pycli",
             self._github_pat,
             self.title,
             labels=["nodata", "bot"],
-            assignees=["CoderChen01"],
+            assignees=["RainbowJier"],
         )
         if is_success and issue_info:
+            # 如果创建成功，记录问题信息，并初始化缺失数据的评论信息为空列表
             self.existed_issue_map[issue_info["issue_number"]] = issue_info
             self.existed_nodata_infos[issue_info["issue_number"]] = []
             return True
         return False
 
-    def _add_nodata_info(self) -> None:
-        for indicator_name in self.nodata_indicator_names:
-            is_ok = False
-            for _, issue_comment_infos in self.existed_nodata_infos.items():
-                for issue_comment_info in issue_comment_infos:
-                    if indicator_name not in issue_comment_info["body"]:
-                        continue
-                    create_issue_comment_reactions(
-                        issue_cooment_api_url=issue_comment_info[
-                            "issue_comment_api_url"
-                        ],
-                        content="eyes",
-                        github_pat=self._github_pat,
-                    )
-                    is_ok = True
-                    break
-                if is_ok:
-                    break
-            if is_ok:
-                continue
-            create_issue_comment(
-                issue_api_url=list(self.existed_issue_map.values())[0]["issue_api_url"],
-                body=f"No Indicator Data: {indicator_name}",
-                github_pat=self._github_pat,
-            )
 
-    def run(self) -> None:
-        try:
-            if not self._create_nodata_issue():
-                return
-            self._add_nodata_info()
-        except Exception:
-            return
+    class YourClassName:
+        def _add_nodata_info(self) -> None:
+            """
+            为没有数据的指标添加信息。
+            遍历nodata_indicator_names列表中的每个指标名称，检查是否已经在存在的issue评论中提到了这个指标。
+            如果提到，则为该评论添加"eyes"反应；如果未提到，则在第一个存在的issue中添加一条评论，指出缺少该指标的数据。
+            """
+            for indicator_name in self.nodata_indicator_names:
+                is_ok = False  # 标记是否已经处理过当前指标
+
+                # 检查每个已存在的issue评论中是否提到了当前指标
+                for _, issue_comment_infos in self.existed_nodata_infos.items():
+                    for issue_comment_info in issue_comment_infos:
+                        # 如果评论中包含当前指标，则为该评论添加"eyes"反应
+                        if indicator_name not in issue_comment_info["body"]:
+                            continue
+                        create_issue_comment_reactions(
+                            issue_cooment_api_url=issue_comment_info[
+                                "issue_comment_api_url"
+                            ],
+                            content="eyes",
+                            github_pat=self._github_pat,
+                        )
+                        is_ok = True  # 标记已处理
+                        break
+                    if is_ok:
+                        break  # 如果当前指标已处理，跳出内层循环
+
+                if is_ok:
+                    continue  # 如果当前指标已处理，继续下一个指标
+
+                # 如果当前指标未在任何评论中被提到，则在第一个存在的issue中添加评论
+                create_issue_comment(
+                    issue_api_url=list(self.existed_issue_map.values())[0]["issue_api_url"],
+                    body=f"No Indicator Data: {indicator_name}",
+                    github_pat=self._github_pat,
+                )
+
+        def run(self) -> None:
+            """
+            执行数据检查并处理无数据指标的流程。
+            尝试创建无数据的issue，如果成功，则添加无数据信息；如果过程中出现异常，则静默处理异常。
+            """
+            try:
+                # 如果无法创建无数据的issue，则直接返回
+                if not self._create_nodata_issue():
+                    return
+                self._add_nodata_info()  # 添加无数据信息
+            except Exception:
+                return  # 静默处理异常
 
 
 def run_query(query_result: "BaseQueryResult") -> None:

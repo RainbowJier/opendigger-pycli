@@ -8,7 +8,7 @@ exclude = ["docs/assets/demos/*"]
 [project]
 name = "opendigger_pycli"
 requires-python = ">=3.8"
-authors = [{ name = "CoderChen01", email = "wwseyy@gmail.com" }]
+authors = [{ name = "RainbowJier", email = "3021809270@qq.com" }]
 license = { file = "LICENSE" }
 readme = "docs/决赛-T2-ahpu_new_peasants-autogit.md"
 classifiers = [
@@ -40,9 +40,9 @@ keywords = [
 
 
 [project.urls]
-AuthorGithub = "https://github.com/CoderChen01"
-Source = "https://github.com/CoderChen01/opendigger-pycli/"
-Documentation = "https://github.com/CoderChen01/opendigger-pycli/blob/main/README.md"
+AuthorGithub = "https://github.com/RainboJier"
+Source = "https://github.com/RainboJier/opendigger-pycli/"
+Documentation = "https://github.com/RainboJier/opendigger-pycli/docs"
 
 [project.scripts]
 opendigger = "opendigger_pycli.__main__:opendigger"

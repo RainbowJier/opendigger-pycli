@@ -52,6 +52,7 @@ pass_environment = click.make_pass_decorator(Environment, ensure=True)
     type=click.Choice(["NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]),
     help="Enables verbose mode.",
 )
+
 @pass_environment
 def opendigger(
     env: Environment,
@@ -62,7 +63,6 @@ def opendigger(
 
 
 opendigger_cmd = t.cast("Group", opendigger)
-
 
 @opendigger_cmd.group(invoke_without_command=True)  # type: ignore
 @click.option(
@@ -76,29 +76,49 @@ opendigger_cmd = t.cast("Group", opendigger)
 @pass_environment
 def user(env: Environment, usernames: t.List[str]) -> None:
     """
-    Operate on user indicators
+    Operate on user indicators.
+
+    This function is designed to process operations related to GitHub user indicators.
+    It can be used to fetch user information from GitHub based on the provided usernames.
+
+    Parameters:
+    - env (Environment): An instance of the Environment class that provides logging and configuration capabilities.
+    - usernames (List[str]): A list of GitHub usernames for which information is to be fetched.
+
+    Returns:
+    - None: This function does not return any value.
     """
+
+    # Enable verbose logging to indicate the user indicator mode is active
     env.vlog("indicator mode: [green]USER")
 
+    # Remove duplicates from the list of usernames
     usernames = list(set(usernames))
+    # Debugging log to show the processed list of usernames
     env.dlog("usernames:", usernames)
 
+    # Check if the command was invoked without a subcommand, and if so, fetch user information
     if click.get_current_context().invoked_subcommand is None:
+        # Request user information from GitHub
         env.vlog("[bold green]requesting users info...")
         with CONSOLE.status("[bold green]requesting users info..."):
             env.dlog(print_user_info(usernames, env.cli_config.app_keys.github_pat))
             env.vlog("[bold green]end requesting users info...")
-            return
+        return
 
+    # If no usernames are provided, log an error message and raise a usage error
     if not usernames:
         env.elog("You must specify the username.")
         raise click.UsageError("You must specify the username.")
 
+    # Set the operation mode to "user" and update the parameters in the environment
     env.set_mode("user")
     env.set_params(usernames)
+    # Debugging logs to verify the mode and parameters have been set correctly
     env.dlog("Set params to env")
     env.dlog("env.mode:", env.mode)
     env.dlog("env.params:", env.params)
+
 
 
 @opendigger_cmd.group(invoke_without_command=True)  # type: ignore
@@ -114,27 +134,46 @@ def user(env: Environment, usernames: t.List[str]) -> None:
 @pass_environment
 def repo(env: Environment, repos: t.List[t.Tuple[str, str]]) -> None:
     """
-    Operate on repository indicators
-    """
-    env.vlog("indicator mode: [green]REPO")
+    Operate on repository indicators.
+    This function is designed to handle operations related to GitHub repositories,
+    such as fetching information for specified repositories.
 
+    Parameters:
+    - env (Environment): An instance of the Environment class, providing necessary
+      environment variables and configurations for the operation.
+    - repos (List[Tuple[str, str]]): A list of tuples, each containing the GitHub
+      repository in the format of ("organization", "repository"). This allows
+      for specifying multiple repositories at once.
+
+    Returns:
+    - None: This function does not return any value but logs information and performs
+      operations related to the specified repositories.
+    """
+    env.vlog("indicator mode: [green]REPO")  # Log the current operation mode.
+
+    # Remove duplicates from the repositories list and log the unique repositories.
     repos = list(set(repos))
     env.dlog("repos:", repos)
 
+    # Check if a subcommand is invoked. If not, fetch information for the specified repositories.
     if click.get_current_context().invoked_subcommand is None:
         env.vlog("[bold green]fetching repos info...")
         with CONSOLE.status("[bold green]fetching repos info..."):
+            # Fetch and log the repository information.
             env.dlog(print_repo_info(repos, env.cli_config.app_keys.github_pat))
             env.vlog("[bold green]end fetching repos info...")
         return
 
+    # Ensure at least one repository is specified.
     if not repos:
         env.elog("You must specify the repository.")
         raise click.UsageError("You must specify the repository.")
 
+    # Set the operation mode and parameters in the environment.
     env.set_mode("repo")
     env.set_params(repos)
     env.vlog("Set params to env")
+
 
 
 @with_plugins(iter_entry_points("opendigger_pycli.plugins"))  # type: ignore
