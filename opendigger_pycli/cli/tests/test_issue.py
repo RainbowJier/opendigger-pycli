@@ -11,7 +11,7 @@ def test_issue():
     runner = CliRunner()
     # 使用指定参数调用opendigger命令，并捕获执行结果
     result = runner.invoke(
-        opendigger, ["repo","-r","X-lab2017/open-digger-404 "]  # 执行查询命令
+        opendigger, ["repo","-r","X-lab2017/open-digger"]  # 执行查询命令
     )
     # 打印查询结果
     print(result.output)

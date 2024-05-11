@@ -575,14 +575,6 @@ opendigger repo -r X-lab2017/open-digger query -i -os openrank:2023 display -f t
 
 open-digger官方仓库对于一些仓库的指标数据是缺失的。用户查询某个仓库的指标数据时，如果该仓库的指标数据缺失，我们会给出相应的提示，并且会使用用户配置的`github personal access token`
 调用Github API在`opendigger-pycli`的github上自动提交一个数据缺失的issue。
-
-issue信息如图所示：
-
-![issue](./assets/issue.png)
-
-如果多个用户重复查询同一个仓库的指标数据，我们不会冗余的提交，而是在原有的issue上添加一个"👀"
-符号。这样open-digger开发者可以通过定期查看issue来了解用户关注哪些仓库/用户的哪些指标数据。如果关注人数较多，可以决策是否添加该仓库/用户的指标数据。
-
 ### 2. 仓库不存在
 
 如果用户输入的仓库/用户不存在，我们会给出相应的提示。
@@ -616,7 +608,7 @@ opendigger user -u RainbowJier-404
 插件是opendigger-pycli的一个重要特性，它可以帮助用户快速开发自定义的命令，对筛选出来的数据进行处理。最为重要的就是我们的`query`
 命令，它利用了`click`
 库提供的[Mult Command Pipelines](https://click.palletsprojects.com/en/8.1.x/commands/#multi-command-pipelines)
-特性，可以将筛选出来的数据传递给它的子命令，子命令可以是`display`命令，也可以是用户自定义的命令。
+特性，可以将筛选出来的数据传递给它的子命令，子命令可以是`display`命令，也可以是用户自定义的命令。w
 
 ### 1. query的返回数据
 

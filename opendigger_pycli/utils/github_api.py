@@ -192,7 +192,7 @@ def create_issue_comment(issue_api_url: str, body: str, github_pat: str) -> bool
     )
 
     # 根据响应状态码判断请求是否成功，并返回相应的布尔值
-    return response.status_code == 201
+    return response.status_code == 200
 
 
 

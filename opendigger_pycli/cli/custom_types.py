@@ -19,6 +19,13 @@ if t.TYPE_CHECKING:
 
 
 class GhRepoNameType(click.ParamType):
+    """
+    自定义参数类型类，用于验证GitHub仓库名的格式，并确认该仓库是否存在。
+
+    属性:
+    name (str): 参数类型的名称，默认为 "gh_repo_name"。
+    """
+
     name: str = "gh_repo_name"
 
     def convert(
@@ -27,8 +34,24 @@ class GhRepoNameType(click.ParamType):
         param: t.Optional["Parameter"],
         ctx: t.Optional["Context"],
     ) -> t.Tuple[str, str]:
+        """
+        将输入的字符串转换为组织名和仓库名的元组。如果输入的仓库名不存在，则抛出错误。
+
+        参数:
+        value (str): 待转换的字符串，预期格式为“组织名/仓库名”。
+        param (t.Optional["Parameter"]): 与该参数相关联的参数对象，如果有的话。
+        ctx (t.Optional["Context"]): 参数所在的命令上下文，如果有的话。
+
+        返回:
+        t.Tuple[str, str]: 转换后的组织名和仓库名的元组。
+
+        异常:
+        click.ClickException: 如果输入的字符串格式不正确，或者指定的GitHub仓库不存在，则抛出异常。
+        """
         try:
+            # 尝试根据"/"分割字符串为组织名和仓库名
             org_name, repo_name = value.split("/")
+            # 检查指定的GitHub仓库是否存在
             if not exist_gh_repo(org_name, repo_name):
                 self.fail(
                     f"{value} repo does not exist, "
@@ -36,7 +59,9 @@ class GhRepoNameType(click.ParamType):
                 )
             return org_name, repo_name
         except ValueError:
+            # 如果字符串无法按预期分割，则抛出异常
             self.fail(f"{value} is not a valid repo name")
+
 
 
 class GhUserNameType(click.ParamType):
