@@ -13,5 +13,6 @@ if t.TYPE_CHECKING:
 @click.command("print-result", help="[Plugin Demo] Print query result to terminal")
 @processor
 def print_result(results: QueryResults):
+    # 输出结果
     CONSOLE.print(results)
     yield from results

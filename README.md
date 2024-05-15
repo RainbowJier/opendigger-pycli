@@ -646,7 +646,7 @@ opendigger user -u RainbowJier-404
 插件是opendigger-pycli的一个重要特性，它可以帮助用户快速开发自定义的命令，对筛选出来的数据进行处理。最为重要的就是我们的`query`
 命令，它利用了`click`
 库提供的[Mult Command Pipelines](https://click.palletsprojects.com/en/8.1.x/commands/#multi-command-pipelines)
-特性，可以将筛选出来的数据传递给它的子命令，子命令可以是`display`命令，也可以是用户自定义的命令。w
+特性，可以将筛选出来的数据传递给它的子命令，子命令可以是`display`命令，也可以是用户自定义的命令。
 
 ### 1. query的返回数据
 
@@ -766,15 +766,15 @@ setup(
 
 进入示例插件的目录，执行如下命令安装插件：
 
-```bash
+```shell
 cd plugin_example/print_result
 
-python3 setup.py install
+python setup.py install
 ```
 
 我们运行如下命令：
 
-```bash
+```shell
 opendigger repo -r X-lab2017/open-digger  query  --help
 ```
 
